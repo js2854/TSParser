@@ -14,7 +14,7 @@ typedef enum TS_ERR
     TS_FILE_SEEK_FAIL,
 }TS_ERR;
 
-// PID种类
+// PID绉嶇被
 typedef enum E_PKT_TYPE
 {
     E_PAT       = 0,
@@ -58,7 +58,7 @@ public:
     sint64 GetDTS() const { return m_s64DTS; }
 
 public:
-    static uint16 s_au16PIDs[E_MAX]; // 记录所有pid
+    static uint16 s_au16PIDs[E_MAX]; // 璁板綍鎵�鏈塸id
 
 private:
     bool   __HasAdaptField();
@@ -94,7 +94,7 @@ public:
     TSParser(const char *pFilePath);
     ~TSParser();
 
-    TS_ERR Parse();    
+    TS_ERR Parse();
 
 private:
     TS_ERR __OpenFile();

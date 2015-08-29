@@ -28,7 +28,7 @@ typedef signed long long            sint64;
 #define TS_PKT_LEN                  188
 #define TS_SYNC_BYTE                0x47
 #define STUFFING_BYTE               0xFF
-#define PES_START_CODE              0x010000    // PES·Ö×éÆğÊ¼±êÖ¾0x000001
+#define PES_START_CODE              0x010000    // PESåˆ†ç»„èµ·å§‹æ ‡å¿—0x000001
 #define CRC32_LEN                   4
 
 
@@ -129,7 +129,7 @@ typedef signed long long            sint64;
 #undef BIG_ENDIAN
 #endif
 
-#pragma pack(push, 1)  // 1×Ö½Ú¶ÔÆë
+#pragma pack(push, 1)  // 1å­—èŠ‚å¯¹é½
 typedef struct TSHdrFixedPart
 {
     uint8  sync_byte:8;
@@ -394,7 +394,7 @@ typedef struct PMTSubSectionFixedPart
     uint8 ES_info_lengh7_0:8;
 #endif
 }PMTSubSectionFixedPart;
-#pragma pack(pop)   //»Ö¸´¶ÔÆë×´Ì¬
+#pragma pack(pop)   //æ¢å¤å¯¹é½çŠ¶æ€
 
 #endif //__TS_TYPES__
 

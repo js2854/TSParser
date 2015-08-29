@@ -14,16 +14,17 @@
 #define PRINT(fmt,...)                  printf(fmt, ## __VA_ARGS__)
 #define PRINT_LINE(fmt,...)             printf(fmt" -- [%s:%d]\n", ## __VA_ARGS__, __FILE__, __LINE__)
 
-uint16 TSPacket::s_au16PIDs[E_MAX] = {PID_UNSPEC,PID_UNSPEC,PID_UNSPEC,PID_UNSPEC}; // ¼ÇÂ¼ËùÓÐpid
+// è®°å½•æ‰€æœ‰pid
+uint16 TSPacket::s_au16PIDs[E_MAX] = {PID_UNSPEC,PID_UNSPEC,PID_UNSPEC,PID_UNSPEC,PID_UNSPEC};
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.Parse
- * º¯Êý¹¦ÄÜ  : ½âÎöTS°ü
- * ²Î    Êý  : const char *pBuf  
-               uint16 u16BufLen  
- * ·µ »Ø Öµ  : TS_ERR
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.Parse
+ * å‡½æ•°åŠŸèƒ½  : è§£æžTSåŒ…
+ * å‚    æ•°  : const char *pBuf
+               uint16 u16BufLen
+ * è¿” å›ž å€¼  : TS_ERR
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 TS_ERR TSPacket::Parse(const char *pBuf, uint16 u16BufLen)
 {
@@ -58,7 +59,7 @@ TS_ERR TSPacket::Parse(const char *pBuf, uint16 u16BufLen)
     {
         m_s64PCR = __GetPCR();
     }
-    
+
     if (m_pHdr->payload_unit_start_indicator)
     {
         ret = __ParsePES();
@@ -68,12 +69,12 @@ TS_ERR TSPacket::Parse(const char *pBuf, uint16 u16BufLen)
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__HasAdaptField
- * º¯Êý¹¦ÄÜ  : ÅÐ¶ÏÊÇ·ñ´æÔÚÊÊÓ¦ÇøÓò
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : bool
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__HasAdaptField
+ * å‡½æ•°åŠŸèƒ½  : åˆ¤æ–­æ˜¯å¦å­˜åœ¨é€‚åº”åŒºåŸŸ
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : bool
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 bool TSPacket::__HasAdaptField()
 {
@@ -82,12 +83,12 @@ bool TSPacket::__HasAdaptField()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__HasPayload
- * º¯Êý¹¦ÄÜ  : ÅÐ¶ÏÊÇ·ñ´æÔÚ¸ºÔØ
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : bool
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__HasPayload
+ * å‡½æ•°åŠŸèƒ½  : åˆ¤æ–­æ˜¯å¦å­˜åœ¨è´Ÿè½½
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : bool
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 bool TSPacket::__HasPayload()
 {
@@ -96,12 +97,12 @@ bool TSPacket::__HasPayload()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__GetAdaptField
- * º¯Êý¹¦ÄÜ  : »ñÈ¡ÊÊÓ¦ÇøÓòÖ¸Õë;ÊÊÓ¦ÇøÓò²»´æÔÚÊ±·µ»ØNULL
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : AdaptFixedPart*
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__GetAdaptField
+ * å‡½æ•°åŠŸèƒ½  : èŽ·å–é€‚åº”åŒºåŸŸæŒ‡é’ˆ;é€‚åº”åŒºåŸŸä¸å­˜åœ¨æ—¶è¿”å›žNULL
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : AdaptFixedPart*
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 AdaptFixedPart* TSPacket::__GetAdaptField()
 {
@@ -119,12 +120,12 @@ AdaptFixedPart* TSPacket::__GetAdaptField()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__GetAdaptLen
- * º¯Êý¹¦ÄÜ  : »ñÈ¡ÊÊÓ¦ÇøÓòµÄ³¤¶È
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : uint8
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__GetAdaptLen
+ * å‡½æ•°åŠŸèƒ½  : èŽ·å–é€‚åº”åŒºåŸŸçš„é•¿åº¦
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : uint8
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 uint8 TSPacket::__GetAdaptLen()
 {
@@ -142,12 +143,12 @@ uint8 TSPacket::__GetAdaptLen()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__GetPCR
- * º¯Êý¹¦ÄÜ  : ´æÔÚPCR×Ö¶ÎÊ±,»ñÈ¡PCRµÄÖµ;²»´æÔÚÊ±·µ»Ø-1
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : sint64
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__GetPCR
+ * å‡½æ•°åŠŸèƒ½  : å­˜åœ¨PCRå­—æ®µæ—¶,èŽ·å–PCRçš„å€¼;ä¸å­˜åœ¨æ—¶è¿”å›ž-1
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : sint64
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 sint64 TSPacket::__GetPCR()
 {
@@ -172,12 +173,12 @@ sint64 TSPacket::__GetPCR()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__IsVideoStream
- * º¯Êý¹¦ÄÜ  : ¸ù¾ÝStreamTypeÅÐ¶ÏÊÇ·ñÊÓÆµÁ÷
- * ²Î    Êý  : uint8 u8StreamType  
- * ·µ »Ø Öµ  : bool
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__IsVideoStream
+ * å‡½æ•°åŠŸèƒ½  : æ ¹æ®StreamTypeåˆ¤æ–­æ˜¯å¦è§†é¢‘æµ
+ * å‚    æ•°  : uint8 u8StreamType
+ * è¿” å›ž å€¼  : bool
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 bool TSPacket::__IsVideoStream(uint8 u8StreamType)
 {
@@ -188,12 +189,12 @@ bool TSPacket::__IsVideoStream(uint8 u8StreamType)
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__IsAudioStream
- * º¯Êý¹¦ÄÜ  : ¸ù¾ÝStreamTypeÅÐ¶ÏÊÇ·ñÒôÆµÁ÷
- * ²Î    Êý  : uint8 u8StreamType  
- * ·µ »Ø Öµ  : bool
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__IsAudioStream
+ * å‡½æ•°åŠŸèƒ½  : æ ¹æ®StreamTypeåˆ¤æ–­æ˜¯å¦éŸ³é¢‘æµ
+ * å‚    æ•°  : uint8 u8StreamType
+ * è¿” å›ž å€¼  : bool
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 bool TSPacket::__IsAudioStream(uint8 u8StreamType)
 {
@@ -205,12 +206,12 @@ bool TSPacket::__IsAudioStream(uint8 u8StreamType)
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__GetPayloadOffset
- * º¯Êý¹¦ÄÜ  : »ñÈ¡¸ºÔØÏà¶ÔÓÚTS°üÍ·µÄÆ«ÒÆ
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : uint8
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__GetPayloadOffset
+ * å‡½æ•°åŠŸèƒ½  : èŽ·å–è´Ÿè½½ç›¸å¯¹äºŽTSåŒ…å¤´çš„åç§»
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : uint8
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 uint8 TSPacket::__GetPayloadOffset()
 {
@@ -223,12 +224,12 @@ uint8 TSPacket::__GetPayloadOffset()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__GetTableStartPos
- * º¯Êý¹¦ÄÜ  : »ñÈ¡PAT/PMT±íÏà¶ÔÓÚTS°üÍ·µÄÆ«ÒÆ
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : uint8
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__GetTableStartPos
+ * å‡½æ•°åŠŸèƒ½  : èŽ·å–PAT/PMTè¡¨ç›¸å¯¹äºŽTSåŒ…å¤´çš„åç§»
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : uint8
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 uint8 TSPacket::__GetTableStartPos()
 {
@@ -246,12 +247,12 @@ uint8 TSPacket::__GetTableStartPos()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__GetPTS
- * º¯Êý¹¦ÄÜ  : ´æÔÚPTS×Ö¶ÎÊ±,»ñÈ¡PTSµÄÖµ;²»´æÔÚÊ±·µ»Ø-1
- * ²Î    Êý  : const OptionPESHdrFixedPart *pHdr  
- * ·µ »Ø Öµ  : sint64
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__GetPTS
+ * å‡½æ•°åŠŸèƒ½  : å­˜åœ¨PTSå­—æ®µæ—¶,èŽ·å–PTSçš„å€¼;ä¸å­˜åœ¨æ—¶è¿”å›ž-1
+ * å‚    æ•°  : const OptionPESHdrFixedPart *pHdr
+ * è¿” å›ž å€¼  : sint64
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 sint64 TSPacket::__GetPTS(const OptionPESHdrFixedPart *pHdr)
 {
@@ -268,12 +269,12 @@ sint64 TSPacket::__GetPTS(const OptionPESHdrFixedPart *pHdr)
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__GetDTS
- * º¯Êý¹¦ÄÜ  : ´æÔÚDTS×Ö¶ÎÊ±,»ñÈ¡DTSµÄÖµ;²»´æÔÚÊ±·µ»Ø-1
- * ²Î    Êý  : const OptionPESHdrFixedPart *pHdr  
- * ·µ »Ø Öµ  : sint64
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__GetDTS
+ * å‡½æ•°åŠŸèƒ½  : å­˜åœ¨DTSå­—æ®µæ—¶,èŽ·å–DTSçš„å€¼;ä¸å­˜åœ¨æ—¶è¿”å›ž-1
+ * å‚    æ•°  : const OptionPESHdrFixedPart *pHdr
+ * è¿” å›ž å€¼  : sint64
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 sint64 TSPacket::__GetDTS(const OptionPESHdrFixedPart *pHdr)
 {
@@ -285,17 +286,17 @@ sint64 TSPacket::__GetDTS(const OptionPESHdrFixedPart *pHdr)
         PTS_DTS *pDTS = (PTS_DTS*)((char*)pHdr + sizeof(OptionPESHdrFixedPart) + sizeof(PTS_DTS));
         s64DTS = TIMESTAMP(pDTS->ts32_30, pDTS->ts29_22, pDTS->ts21_15, pDTS->ts14_7, pDTS->ts6_0);
     }
-    
+
     return s64DTS;
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__ParsePAT
- * º¯Êý¹¦ÄÜ  : ½âÎöPAT±í,»ñÈ¡PMTÐÅÏ¢
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : TS_ERR
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__ParsePAT
+ * å‡½æ•°åŠŸèƒ½  : è§£æžPATè¡¨,èŽ·å–PMTä¿¡æ¯
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : TS_ERR
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 TS_ERR TSPacket::__ParsePAT()
 {
@@ -329,12 +330,12 @@ TS_ERR TSPacket::__ParsePAT()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__ParsePMT
- * º¯Êý¹¦ÄÜ  : ½âÎöPMT±í,»ñÈ¡PCR,ÊÓÆµºÍÒôÆµpidÐÅÏ¢
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : TS_ERR
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__ParsePMT
+ * å‡½æ•°åŠŸèƒ½  : è§£æžPMTè¡¨,èŽ·å–PCR,è§†é¢‘å’ŒéŸ³é¢‘pidä¿¡æ¯
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : TS_ERR
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 TS_ERR TSPacket::__ParsePMT()
 {
@@ -344,7 +345,7 @@ TS_ERR TSPacket::__ParsePMT()
     PMTHdrFixedPart *pPMT = (PMTHdrFixedPart*)pPMTBuf;
     s_au16PIDs[E_PCR] = MK_WORD(pPMT->PCR_PID12_8, pPMT->PCR_PID7_0);
     uint16 u16SectionLen = MK_WORD(pPMT->section_length11_8, pPMT->section_length7_0);
-    // n * program_info_descriptorµÄ³¤¶È
+    // n * program_info_descriptorçš„é•¿åº¦
     uint16 u16ProgInfoLen = MK_WORD(pPMT->program_info_length11_8, pPMT->program_info_length7_0);
     uint16 u16AllSubSectionLen = u16SectionLen - (sizeof(PMTHdrFixedPart) - 3) - u16ProgInfoLen - CRC32_LEN;
 
@@ -370,12 +371,12 @@ TS_ERR TSPacket::__ParsePMT()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSPacket.__ParsePES
- * º¯Êý¹¦ÄÜ  : ½âÎöPES,»ñÈ¡PTSºÍDTS
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : TS_ERR
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSPacket.__ParsePES
+ * å‡½æ•°åŠŸèƒ½  : è§£æžPES,èŽ·å–PTSå’ŒDTS
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : TS_ERR
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 TS_ERR TSPacket::__ParsePES()
 {
@@ -383,10 +384,10 @@ TS_ERR TSPacket::__ParsePES()
 
     const char *pPESBuf = m_pBuf + __GetPayloadOffset();
     PESHdrFixedPart *pPES = (PESHdrFixedPart*)pPESBuf;
-    
+
     if (PES_START_CODE == pPES->packet_start_code_prefix)
     {
-        m_u8StreamId = pPES->stream_id;        
+        m_u8StreamId = pPES->stream_id;
         if ((m_u8StreamId & PES_STREAM_VIDEO) || (m_u8StreamId & PES_STREAM_AUDIO))
         {
             OptionPESHdrFixedPart *pHdr = (OptionPESHdrFixedPart*)(pPESBuf + sizeof(PESHdrFixedPart));
@@ -407,12 +408,12 @@ TSParser::~TSParser()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSParser.Parse
- * º¯Êý¹¦ÄÜ  : ½âÎöTSÎÄ¼þ
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : TS_ERR
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSParser.Parse
+ * å‡½æ•°åŠŸèƒ½  : è§£æžTSæ–‡ä»¶
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : TS_ERR
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 TS_ERR TSParser::Parse()
 {
@@ -460,12 +461,12 @@ TS_ERR TSParser::Parse()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSParser.__OpenFile
- * º¯Êý¹¦ÄÜ  : ´ò¿ªTSÎÄ¼þ
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : TS_ERR
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSParser.__OpenFile
+ * å‡½æ•°åŠŸèƒ½  : æ‰“å¼€TSæ–‡ä»¶
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : TS_ERR
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 TS_ERR TSParser::__OpenFile()
 {
@@ -481,12 +482,12 @@ TS_ERR TSParser::__OpenFile()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSParser.__CloseFile
- * º¯Êý¹¦ÄÜ  : ¹Ø±ÕÎÄ¼þ
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : TS_ERR
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSParser.__CloseFile
+ * å‡½æ•°åŠŸèƒ½  : å…³é—­æ–‡ä»¶
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : TS_ERR
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 TS_ERR TSParser::__CloseFile()
 {
@@ -500,12 +501,12 @@ TS_ERR TSParser::__CloseFile()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSParser.__SeekToFirstPkt
- * º¯Êý¹¦ÄÜ  : ½«ÎÄ¼þ¶ÁÈ¡Ö¸ÕëÆ«ÒÆÖÁµÚÒ»¸öºÏ·¨µÄTS°ü
- * ²Î    Êý  : ÎÞ
- * ·µ »Ø Öµ  : bool
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSParser.__SeekToFirstPkt
+ * å‡½æ•°åŠŸèƒ½  : å°†æ–‡ä»¶è¯»å–æŒ‡é’ˆåç§»è‡³ç¬¬ä¸€ä¸ªåˆæ³•çš„TSåŒ…
+ * å‚    æ•°  : æ— 
+ * è¿” å›ž å€¼  : bool
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 bool TSParser::__SeekToFirstPkt()
 {
@@ -546,20 +547,20 @@ bool TSParser::__SeekToFirstPkt()
 }
 
 /*****************************************************************************
- * º¯ Êý Ãû  : TSParser.__PrintPacketInfo
- * º¯Êý¹¦ÄÜ  : ´òÓ¡TS°üµÄÐÅÏ¢
- * ²Î    Êý  : TSPacket &tPkt    
-               uint64 u64Offset  
- * ·µ »Ø Öµ  : void
- * ×÷    Õß  : JiaSong
- * ´´½¨ÈÕÆÚ  : 2015-8-29
+ * å‡½ æ•° å  : TSParser.__PrintPacketInfo
+ * å‡½æ•°åŠŸèƒ½  : æ‰“å°TSåŒ…çš„ä¿¡æ¯
+ * å‚    æ•°  : TSPacket &tPkt
+               uint64 u64Offset
+ * è¿” å›ž å€¼  : void
+ * ä½œ    è€…  : JiaSong
+ * åˆ›å»ºæ—¥æœŸ  : 2015-8-29
 *****************************************************************************/
 void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset)
 {
     static uint32 s_u32PktNo = 0;
     PRINT("PktNo: %08u, Offset: 0x%08llX, PID: 0x%04X, CC: %02u",
           s_u32PktNo++, u64Offset, tPkt.GetPID(), tPkt.GetCC());
-    
+
     if (tPkt.IsPAT())
     {
         PRINT(", PAT");
@@ -575,7 +576,7 @@ void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset)
     else if (PID_NULL == tPkt.GetPID())
     {
         PRINT(", Null Packet");
-    }    
+    }
 
     if (tPkt.GetPTS() > 0)
     {
@@ -592,7 +593,7 @@ void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset)
     }
     else if (tPkt.IsAudio())
     {
-        PRINT(", Audio");        
+        PRINT(", Audio");
     }
 
     PRINT_LINE("");
