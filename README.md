@@ -31,7 +31,7 @@
 	PktNo: 00000013, Offset: 0x0000098C, PID: 0x1FFF, CC: 13, Null Packet -- [TSParser.cpp:598]
 	PktNo: 00000014, Offset: 0x00000A48, PID: 0x1FFF, CC: 14, Null Packet -- [TSParser.cpp:598]
 	PktNo: 00000015, Offset: 0x00000B04, PID: 0x1FFF, CC: 15, Null Packet -- [TSParser.cpp:598]
-	PktNo: 00000016, Offset: 0x00000BC0, PID: 0x0000, CC: 01, PAT, Video -- [TSParser.cpp:598]
+	PktNo: 00000016, Offset: 0x00000BC0, PID: 0x0000, CC: 01, PAT -- [TSParser.cpp:598]
 	PktNo: 00000017, Offset: 0x00000C7C, PID: 0x0500, CC: 01, PMT -- [TSParser.cpp:598]
 	PktNo: 00000018, Offset: 0x00000D38, PID: 0x1023, CC: 00, PCR: 276, PTS: 738, DTS: 506, Video -- [TSParser.cpp:598]
 	PktNo: 00000019, Offset: 0x00000DF4, PID: 0x1022, CC: 00, PTS: 562, Audio -- [TSParser.cpp:598]
