@@ -155,7 +155,7 @@ sint64 TSPacket::__GetPCR()
     assert(NULL != m_pBuf);
     assert(NULL != m_pHdr);
 
-    sint64 s64PCR = 0;
+    sint64 s64PCR = INVALID_VAL;
     if (__HasAdaptField())
     {
         AdaptFixedPart *pAdpt = (AdaptFixedPart*)(m_pBuf + sizeof(TSHdrFixedPart));
@@ -433,6 +433,7 @@ TS_ERR TSParser::Parse()
     uint16 u16ReadBufLen = MAX_READ_PKT_NUM * TS_PKT_LEN;
     char *pReadBuf = new char[u16ReadBufLen];
     AutoDelCharBuf tBuf(pReadBuf);
+    uint32 u32PktNo = 0;
     while (0 == feof(m_pFd))
     {
         sint16 s16ReadLen = fread(pReadBuf, 1, u16ReadBufLen, m_pFd);
@@ -445,8 +446,9 @@ TS_ERR TSParser::Parse()
                 ret = tPkt.Parse(pReadBuf + i*TS_PKT_LEN, TS_PKT_LEN);
                 RETURN_IF_NOT_OK(ret);
 
-                __PrintPacketInfo(tPkt, s64CurPos);
+                __PrintPacketInfo(tPkt, s64CurPos, u32PktNo);
                 s64CurPos += TS_PKT_LEN;
+                u32PktNo++;
             }
         }
         else
@@ -551,15 +553,15 @@ bool TSParser::__SeekToFirstPkt()
  * 函数功能  : 打印TS包的信息
  * 参    数  : TSPacket &tPkt
                uint64 u64Offset
+               uint32 u32PktNo
  * 返 回 值  : void
  * 作    者  : JiaSong
  * 创建日期  : 2015-8-29
 *****************************************************************************/
-void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset)
+void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset, uint32 u32PktNo)
 {
-    static uint32 s_u32PktNo = 0;
     PRINT("PktNo: %08u, Offset: 0x%08llX, PID: 0x%04X, CC: %02u",
-          s_u32PktNo++, u64Offset, tPkt.GetPID(), tPkt.GetCC());
+          u32PktNo, u64Offset, tPkt.GetPID(), tPkt.GetCC());
 
     if (tPkt.IsPAT())
     {

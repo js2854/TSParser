@@ -100,7 +100,7 @@ private:
     TS_ERR __OpenFile();
     TS_ERR __CloseFile();
     bool   __SeekToFirstPkt();
-    void   __PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset);
+    void   __PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset, uint32 u32PktNo);
 
 private:
     string m_strFile;
