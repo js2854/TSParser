@@ -159,7 +159,7 @@ sint64 TSPacket::__GetPCR()
     if (__HasAdaptField())
     {
         AdaptFixedPart *pAdpt = (AdaptFixedPart*)(m_pBuf + sizeof(TSHdrFixedPart));
-        if (pAdpt->PCR_flag)
+        if (pAdpt->adaptation_field_length > 0 && pAdpt->PCR_flag)
         {
             PCR *pcr = (PCR*)((const char*)pAdpt + sizeof(AdaptFixedPart));
             s64PCR = TIMESTAMP(pcr->pcr_base32_25,
