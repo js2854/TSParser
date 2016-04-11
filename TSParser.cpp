@@ -5,6 +5,7 @@
 
 #define MAX_READ_PKT_NUM                100
 #define MAX_CHECK_PKT_NUM               10
+#define MAX_TIME_STR_LEN                20
 
 #define MK_WORD(high,low)               (((high)<<8)|(low))
 #define TIMESTAMP(b1,b2,b3,b4,b5)       (((sint64)(b1)<<25)|((sint64)(b2)<<17)|((sint64)(b3)<<9)|((sint64)(b4)<<1)|(b5))
@@ -573,7 +574,7 @@ void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset, uint32 u32Pkt
     }
     else if (tPkt.GetPCR() > 0)
     {
-        PRINT(", PCR: %lld", tPkt.GetPCR());
+        PRINT(", PCR: %lld(%s)", tPkt.GetPCR(), __TSTimeToStr(tPkt.GetPCR()));
     }
     else if (PID_NULL == tPkt.GetPID())
     {
@@ -582,11 +583,11 @@ void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset, uint32 u32Pkt
 
     if (tPkt.GetPTS() > 0)
     {
-        PRINT(", PTS: %lld", tPkt.GetPTS());
+        PRINT(", PTS: %lld(%s)", tPkt.GetPTS(), __TSTimeToStr(tPkt.GetPTS()));
     }
     if (tPkt.GetDTS() > 0)
     {
-        PRINT(", DTS: %lld", tPkt.GetDTS());
+        PRINT(", DTS: %lld(%s)", tPkt.GetDTS(), __TSTimeToStr(tPkt.GetDTS()));
     }
 
     if (tPkt.IsVideo())
@@ -601,3 +602,20 @@ void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset, uint32 u32Pkt
     PRINT_LINE("");
 }
 
+/*****************************************************************************
+ * 函 数 名  : TSParser.__PrintPacketInfo
+ * 函数功能  : TS时戳转化成可读时间字符串
+ * 参    数  : sint64 s64Time
+ * 返 回 值  : const char *
+ * 作    者  : JiaSong
+ * 创建日期  : 2016-4-11
+*****************************************************************************/
+const char *TSParser::__TSTimeToStr(sint64 s64Time)
+{
+    static char s_acTimeStr[MAX_TIME_STR_LEN] = {0};
+    sint64 s64MiliSecond = s64Time / 90;
+    sint64 s64Second = s64MiliSecond / 1000;
+    snprintf(s_acTimeStr, sizeof(s_acTimeStr), "%02d:%02d:%02d.%03d",
+        s64Second/3600, (s64Second%3600)/60, s64Second%60, s64MiliSecond%1000);
+    return s_acTimeStr;
+}
