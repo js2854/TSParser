@@ -101,6 +101,7 @@ private:
     TS_ERR __CloseFile();
     bool   __SeekToFirstPkt();
     void   __PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset, uint32 u32PktNo);
+    const char *__TSTimeToStr(sint64 s64Time);
 
 private:
     string m_strFile;
