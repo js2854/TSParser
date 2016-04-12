@@ -8,7 +8,8 @@
 #define MAX_TIME_STR_LEN                20
 
 #define MK_WORD(high,low)               (((high)<<8)|(low))
-#define TIMESTAMP(b1,b2,b3,b4,b5)       (((sint64)(b1)<<25)|((sint64)(b2)<<17)|((sint64)(b3)<<9)|((sint64)(b4)<<1)|(b5))
+#define MK_PCR(b1,b2,b3,b4,b5)          (((sint64)(b1)<<25)|((sint64)(b2)<<17)|((sint64)(b3)<<9)|((sint64)(b4)<<1)|(b5))
+#define MK_PTS_DTS(b1,b2,b3,b4,b5)      (((sint64)(b1)<<30)|((sint64)(b2)<<22)|((sint64)(b3)<<15)|((sint64)(b4)<<7)|(b5))
 
 #define MIN(a,b)                        (((a) < (b)) ? (a) : (b))
 #define RETURN_IF_NOT_OK(ret)           if (TS_OK != ret) { return ret; }
@@ -163,7 +164,7 @@ sint64 TSPacket::__GetPCR()
         if (pAdpt->adaptation_field_length > 0 && pAdpt->PCR_flag)
         {
             PCR *pcr = (PCR*)((const char*)pAdpt + sizeof(AdaptFixedPart));
-            s64PCR = TIMESTAMP(pcr->pcr_base32_25,
+            s64PCR = MK_PCR(pcr->pcr_base32_25,
                                 pcr->pcr_base24_17,
                                 pcr->pcr_base16_9,
                                 pcr->pcr_base8_1,
@@ -263,7 +264,7 @@ sint64 TSPacket::__GetPTS(const OptionPESHdrFixedPart *pHdr)
     if (pHdr->PTS_DTS_flags & 0x2)
     {
         PTS_DTS *pPTS = (PTS_DTS*)((char*)pHdr + sizeof(OptionPESHdrFixedPart));
-        s64PTS = TIMESTAMP(pPTS->ts32_30, pPTS->ts29_22, pPTS->ts21_15, pPTS->ts14_7, pPTS->ts6_0);
+        s64PTS = MK_PTS_DTS(pPTS->ts32_30, pPTS->ts29_22, pPTS->ts21_15, pPTS->ts14_7, pPTS->ts6_0);
     }
 
     return s64PTS;
@@ -285,7 +286,7 @@ sint64 TSPacket::__GetDTS(const OptionPESHdrFixedPart *pHdr)
     if (pHdr->PTS_DTS_flags & 0x1)
     {
         PTS_DTS *pDTS = (PTS_DTS*)((char*)pHdr + sizeof(OptionPESHdrFixedPart) + sizeof(PTS_DTS));
-        s64DTS = TIMESTAMP(pDTS->ts32_30, pDTS->ts29_22, pDTS->ts21_15, pDTS->ts14_7, pDTS->ts6_0);
+        s64DTS = MK_PTS_DTS(pDTS->ts32_30, pDTS->ts29_22, pDTS->ts21_15, pDTS->ts14_7, pDTS->ts6_0);
     }
 
     return s64DTS;
@@ -572,7 +573,7 @@ void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset, uint32 u32Pkt
     {
         PRINT(", PMT");
     }
-    else if (tPkt.GetPCR() > 0)
+    else if (tPkt.GetPCR() >= 0)
     {
         PRINT(", PCR: %lld(%s)", tPkt.GetPCR(), __TSTimeToStr(tPkt.GetPCR()));
     }
@@ -581,11 +582,11 @@ void TSParser::__PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset, uint32 u32Pkt
         PRINT(", Null Packet");
     }
 
-    if (tPkt.GetPTS() > 0)
+    if (tPkt.GetPTS() >= 0)
     {
         PRINT(", PTS: %lld(%s)", tPkt.GetPTS(), __TSTimeToStr(tPkt.GetPTS()));
     }
-    if (tPkt.GetDTS() > 0)
+    if (tPkt.GetDTS() >= 0)
     {
         PRINT(", DTS: %lld(%s)", tPkt.GetDTS(), __TSTimeToStr(tPkt.GetDTS()));
     }
@@ -619,3 +620,4 @@ const char *TSParser::__TSTimeToStr(sint64 s64Time)
         s64Second/3600, (s64Second%3600)/60, s64Second%60, s64MiliSecond%1000);
     return s_acTimeStr;
 }
+
