@@ -41,7 +41,7 @@ public:
     {}
     ~TSPacket() {}
 
-    TS_ERR Parse(const char *pBuf, uint16 u16BufLen);
+    TS_ERR Parse(const uint8 *pBuf, uint16 u16BufLen);
 
     uint16 GetPID() const { return m_u16PID; }
     uint8  GetCC() const { return m_u8CC; }
@@ -77,7 +77,7 @@ private:
     TS_ERR __ParsePES();
 
 private:
-    const char      *m_pBuf;
+    const uint8     *m_pBuf;
     TSHdrFixedPart  *m_pHdr;
     uint16          m_u16PID;
     uint8           m_u8CC;
@@ -99,7 +99,7 @@ public:
 private:
     TS_ERR __OpenFile();
     TS_ERR __CloseFile();
-    bool   __SeekToFirstPkt();
+    bool   __SeekToFirstPkt(uint64 u64Offset=0);
     void   __PrintPacketInfo(TSPacket &tPkt, uint64 u64Offset, uint32 u32PktNo);
     const char *__TSTimeToStr(sint64 s64Time);
 
@@ -113,12 +113,12 @@ private:
 class AutoDelCharBuf
 {
 public:
-    AutoDelCharBuf(char *pBuf) : m_pBuf(pBuf) {}
+    AutoDelCharBuf(uint8 *pBuf) : m_pBuf(pBuf) {}
     ~AutoDelCharBuf() { DELETER_BUFFER(m_pBuf); }
 
-    char *Ptr() { return m_pBuf; }
+    uint8 *Ptr() { return m_pBuf; }
 private:
-    char *m_pBuf;
+    uint8 *m_pBuf;
 };
 
 #endif //__TS_PARSER_H__
