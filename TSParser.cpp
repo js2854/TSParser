@@ -3,8 +3,8 @@
 #include <errno.h>
 #include <stdio.h>
 
-#define MAX_READ_PKT_NUM                100
-#define MAX_CHECK_PKT_NUM               10
+#define MAX_READ_PKT_NUM                10000
+#define MAX_CHECK_PKT_NUM               3
 #define MAX_TIME_STR_LEN                20
 
 #define MK_WORD(high,low)               (((high)<<8)|(low))
@@ -22,13 +22,13 @@ uint16 TSPacket::s_au16PIDs[E_MAX] = {PID_UNSPEC,PID_UNSPEC,PID_UNSPEC,PID_UNSPE
 /*****************************************************************************
  * 函 数 名  : TSPacket.Parse
  * 函数功能  : 解析TS包
- * 参    数  : const char *pBuf
+ * 参    数  : const uint8 *pBuf
                uint16 u16BufLen
  * 返 回 值  : TS_ERR
  * 作    者  : JiaSong
  * 创建日期  : 2015-8-29
 *****************************************************************************/
-TS_ERR TSPacket::Parse(const char *pBuf, uint16 u16BufLen)
+TS_ERR TSPacket::Parse(const uint8 *pBuf, uint16 u16BufLen)
 {
     assert(NULL != pBuf);
 
@@ -304,13 +304,13 @@ TS_ERR TSPacket::__ParsePAT()
 {
     assert(NULL != m_pBuf);
 
-    const char *pPATBuf = m_pBuf + __GetTableStartPos();
+    const uint8 *pPATBuf = m_pBuf + __GetTableStartPos();
     PATHdrFixedPart *pPAT = (PATHdrFixedPart*)pPATBuf;
     uint16 u16SectionLen = MK_WORD(pPAT->section_length11_8, pPAT->section_length7_0);
     uint16 u16AllSubSectionLen = u16SectionLen - sizeof(PATHdrFixedPart) - CRC32_LEN;
 
     uint16 u16SubSectionLen = sizeof(PATSubSection);
-    const char *ptr = pPATBuf + sizeof(PATHdrFixedPart);
+    const uint8 *ptr = pPATBuf + sizeof(PATHdrFixedPart);
     for (uint16 i = 0; i < u16AllSubSectionLen; i+= u16SubSectionLen)
     {
         PATSubSection *pDes = (PATSubSection*)(ptr + i);
@@ -343,7 +343,7 @@ TS_ERR TSPacket::__ParsePMT()
 {
     assert(NULL != m_pBuf);
 
-    const char *pPMTBuf = m_pBuf + __GetTableStartPos();
+    const uint8 *pPMTBuf = m_pBuf + __GetTableStartPos();
     PMTHdrFixedPart *pPMT = (PMTHdrFixedPart*)pPMTBuf;
     s_au16PIDs[E_PCR] = MK_WORD(pPMT->PCR_PID12_8, pPMT->PCR_PID7_0);
     uint16 u16SectionLen = MK_WORD(pPMT->section_length11_8, pPMT->section_length7_0);
@@ -352,7 +352,7 @@ TS_ERR TSPacket::__ParsePMT()
     uint16 u16AllSubSectionLen = u16SectionLen - (sizeof(PMTHdrFixedPart) - 3) - u16ProgInfoLen - CRC32_LEN;
 
     uint16 u16SubSectionLen = sizeof(PMTSubSectionFixedPart);
-    const char *ptr = pPMTBuf + sizeof(PMTHdrFixedPart) + u16ProgInfoLen;
+    const uint8 *ptr = pPMTBuf + sizeof(PMTHdrFixedPart) + u16ProgInfoLen;
     for (uint16 i = 0; i < u16AllSubSectionLen; i += u16SubSectionLen)
     {
         PMTSubSectionFixedPart *pSec = (PMTSubSectionFixedPart*)(ptr + i);
@@ -384,7 +384,7 @@ TS_ERR TSPacket::__ParsePES()
 {
     assert(NULL != m_pBuf);
 
-    const char *pPESBuf = m_pBuf + __GetPayloadOffset();
+    const uint8 *pPESBuf = m_pBuf + __GetPayloadOffset();
     PESHdrFixedPart *pPES = (PESHdrFixedPart*)pPESBuf;
 
     if (PES_START_CODE == pPES->packet_start_code_prefix)
@@ -432,30 +432,45 @@ TS_ERR TSParser::Parse()
     sint64 s64CurPos = ftello64(m_pFd);
     PRINT_LINE("Seek to first packet, offset: 0x%08llX", s64CurPos);
 
-    uint16 u16ReadBufLen = MAX_READ_PKT_NUM * TS_PKT_LEN;
-    char *pReadBuf = new char[u16ReadBufLen];
+    uint32 u32ReadBufLen = MAX_READ_PKT_NUM * TS_PKT_LEN;
+    uint8 *pReadBuf = new uint8[u32ReadBufLen];
     AutoDelCharBuf tBuf(pReadBuf);
     uint32 u32PktNo = 0;
     while (0 == feof(m_pFd))
     {
-        sint16 s16ReadLen = fread(pReadBuf, 1, u16ReadBufLen, m_pFd);
-        if (s16ReadLen >= 0)
+        sint32 s32ReadLen = fread(pReadBuf, 1, u32ReadBufLen, m_pFd);
+        if (s32ReadLen >= 0)
         {
-            uint16 u16Count = s16ReadLen / TS_PKT_LEN;
-            for (uint16 i = 0; i < u16Count; i++)
+            uint32 u32Count = s32ReadLen / TS_PKT_LEN;
+            for (uint32 i = 0; i < u32Count; i++)
             {
-                TSPacket tPkt;
-                ret = tPkt.Parse(pReadBuf + i*TS_PKT_LEN, TS_PKT_LEN);
-                RETURN_IF_NOT_OK(ret);
+                if (TS_SYNC_BYTE == pReadBuf[i*TS_PKT_LEN])
+                {
+                    TSPacket tPkt;
+                    ret = tPkt.Parse(pReadBuf + i*TS_PKT_LEN, TS_PKT_LEN);
+                    RETURN_IF_NOT_OK(ret);
 
-                __PrintPacketInfo(tPkt, s64CurPos, u32PktNo);
-                s64CurPos += TS_PKT_LEN;
-                u32PktNo++;
+                    __PrintPacketInfo(tPkt, s64CurPos, u32PktNo);
+                    s64CurPos += TS_PKT_LEN;
+                    u32PktNo++;
+                }
+                else
+                {
+                    PRINT_LINE("###### PktNo: %08d, Offset: 0x%08X, Sync byte error! First byte<0x%02X>",
+                        u32PktNo, s64CurPos, pReadBuf[i*TS_PKT_LEN]);
+                    if (!__SeekToFirstPkt(s64CurPos))
+                    {
+                        PRINT_LINE("###### Seek to next packet failed!");
+                        return TS_FILE_SEEK_FAIL;
+                    }
+                    s64CurPos = ftello64(m_pFd);
+                    break;
+                }
             }
         }
         else
         {
-            PRINT_LINE("###### Read file error, ret<%d>", s16ReadLen);
+            PRINT_LINE("###### Read file error, ret<%d>", s32ReadLen);
             break;
         }
     }
@@ -507,27 +522,29 @@ TS_ERR TSParser::__CloseFile()
 /*****************************************************************************
  * 函 数 名  : TSParser.__SeekToFirstPkt
  * 函数功能  : 将文件读取指针偏移至第一个合法的TS包
- * 参    数  : 无
+ * 参    数  : uint64 u64Offset
  * 返 回 值  : bool
  * 作    者  : JiaSong
  * 创建日期  : 2015-8-29
 *****************************************************************************/
-bool TSParser::__SeekToFirstPkt()
+bool TSParser::__SeekToFirstPkt(uint64 u64Offset)
 {
-    uint16 u16ReadBufLen = MAX_READ_PKT_NUM * TS_PKT_LEN;
-    char *pReadBuf = new char[u16ReadBufLen];
+    fseek(m_pFd, u64Offset, SEEK_SET);
+
+    uint32 u32ReadBufLen = MAX_READ_PKT_NUM * TS_PKT_LEN;
+    uint8 *pReadBuf = new uint8[u32ReadBufLen];
     AutoDelCharBuf tBuf(pReadBuf);
-    sint16 s16ReadLen = fread(pReadBuf, 1, u16ReadBufLen, m_pFd);
-    if (s16ReadLen > 0)
+    sint32 s32ReadLen = fread(pReadBuf, 1, u32ReadBufLen, m_pFd);
+    if (s32ReadLen > 0)
     {
-        uint16 u16PktCount = s16ReadLen / TS_PKT_LEN;
-        uint16 u16Count = MIN(MAX_CHECK_PKT_NUM, u16PktCount);
-        for (uint16 i = 0; i < s16ReadLen - u16Count*TS_PKT_LEN; i++)
+        uint32 u32PktCount = s32ReadLen / TS_PKT_LEN;
+        uint32 u32Count = MIN(MAX_CHECK_PKT_NUM, u32PktCount);
+        for (uint32 i = 0; i < s32ReadLen - u32Count*TS_PKT_LEN; i++)
         {
             if (TS_SYNC_BYTE == pReadBuf[i])
             {
-                uint16 n = 0;
-                for (; n < u16Count; n++)
+                uint32 n = 0;
+                for (; n < u32Count; n++)
                 {
                     if (TS_SYNC_BYTE != pReadBuf[i + n*TS_PKT_LEN])
                     {
@@ -535,16 +552,16 @@ bool TSParser::__SeekToFirstPkt()
                     }
                 }
 
-                if (u16Count == n)
+                if (u32Count == n)
                 {
-                    return (0 == fseek(m_pFd, i, SEEK_SET));
+                    return (0 == fseek(m_pFd, u64Offset+i, SEEK_SET));
                 }
             }
         }
     }
     else
     {
-        PRINT_LINE("###### Read file error, ret<%d>", s16ReadLen);
+        PRINT_LINE("###### Read file error, ret<%d>", s32ReadLen);
     }
 
     return false;
