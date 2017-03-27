@@ -307,7 +307,7 @@ TS_ERR TSPacket::__ParsePAT()
     const uint8 *pPATBuf = m_pBuf + __GetTableStartPos();
     PATHdrFixedPart *pPAT = (PATHdrFixedPart*)pPATBuf;
     uint16 u16SectionLen = MK_WORD(pPAT->section_length11_8, pPAT->section_length7_0);
-    uint16 u16AllSubSectionLen = u16SectionLen - sizeof(PATHdrFixedPart) - CRC32_LEN;
+    uint16 u16AllSubSectionLen = u16SectionLen - (sizeof(PATHdrFixedPart) - HDR_LEN_NOT_INCLUDE) - CRC32_LEN;
 
     uint16 u16SubSectionLen = sizeof(PATSubSection);
     const uint8 *ptr = pPATBuf + sizeof(PATHdrFixedPart);
@@ -349,7 +349,7 @@ TS_ERR TSPacket::__ParsePMT()
     uint16 u16SectionLen = MK_WORD(pPMT->section_length11_8, pPMT->section_length7_0);
     // n * program_info_descriptor的长度
     uint16 u16ProgInfoLen = MK_WORD(pPMT->program_info_length11_8, pPMT->program_info_length7_0);
-    uint16 u16AllSubSectionLen = u16SectionLen - (sizeof(PMTHdrFixedPart) - 3) - u16ProgInfoLen - CRC32_LEN;
+    uint16 u16AllSubSectionLen = u16SectionLen - (sizeof(PMTHdrFixedPart) - HDR_LEN_NOT_INCLUDE) - u16ProgInfoLen - CRC32_LEN;
 
     uint16 u16SubSectionLen = sizeof(PMTSubSectionFixedPart);
     const uint8 *ptr = pPMTBuf + sizeof(PMTHdrFixedPart) + u16ProgInfoLen;

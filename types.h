@@ -30,7 +30,7 @@ typedef signed long long            sint64;
 #define STUFFING_BYTE               0xFF
 #define PES_START_CODE              0x010000    // PES分组起始标志0x000001
 #define CRC32_LEN                   4
-
+#define HDR_LEN_NOT_INCLUDE         3           // PAT/PMT中包含section length字段的头长度
 
 #define PID_PAT                     0x0000
 #define PID_CAT                     0x0001
